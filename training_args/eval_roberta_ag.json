@@ -1,0 +1,14 @@
+{
+    "model_name":"roberta",
+    "dataset_name":"agnews_sup",
+    "do_train":false,
+    "do_predict":true,
+    "load_ckpt_path":"/home/zhangzekai/nlpdl_hw4/outputs/roberta_agnews_sup_237/checkpoint-1070",
+    "output_dir":"/home/zhangzekai/nlpdl_hw4/outputs",
+    "save_strategy":"epoch",
+    "save_total_limit":5,
+    "num_train_epochs":10,
+    "per_device_train_batch_size":64,
+    "logging_steps":10,
+    "seed":237
+}

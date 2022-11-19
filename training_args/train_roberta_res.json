@@ -1,0 +1,14 @@
+{
+    "model_name":"roberta",
+    "dataset_name":"restaurant_sup",
+    "do_train":true,
+    "do_predict":false,
+    "load_ckpt_path":"",
+    "output_dir":"/home/zhangzekai/nlpdl_hw4/outputs",
+    "save_strategy":"epoch",
+    "save_total_limit":5,
+    "num_train_epochs":20,
+    "per_device_train_batch_size":64,
+    "logging_steps":10,
+    "seed":237
+}
