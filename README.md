@@ -57,4 +57,5 @@ In this task, you have to write a `train.py` to train a transformer using the da
 ## My Solution
 
 Final report : [final report](https://github.com/violets-blue/NLPDL_hw4/blob/master/nlpdl_hw4_report.pdf)
-wandb results : [wandb](https://wandb.ai/justinzzk/huggingface)
+
+wandb results : [wandb results](https://wandb.ai/justinzzk/huggingface)
