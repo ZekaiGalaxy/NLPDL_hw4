@@ -62,7 +62,7 @@ wandb results : [wandb results](https://wandb.ai/justinzzk/huggingface)
 
 To train and eval models on datasets, we can use
 
-    ```bash
+    ```
     # train
     python train.py training_args/train_{modelname}_{datasetname}.json
     
