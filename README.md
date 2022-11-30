@@ -62,10 +62,8 @@ wandb results : [wandb results](https://wandb.ai/justinzzk/huggingface)
 
 To train and eval models on datasets, we can use
 
-    ```
     # train
     python train.py training_args/train_{modelname}_{datasetname}.json
     
     # eval
     python train.py training_args/eval_{modelname}_{datasetname}.json
-    ```
