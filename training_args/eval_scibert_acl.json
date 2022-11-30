@@ -3,12 +3,14 @@
     "dataset_name":"acl_sup",
     "do_train":false,
     "do_predict":true,
-    "load_ckpt_path":"/home/zhangzekai/nlpdl_hw4/outputs/scibert_acl_sup_237/checkpoint-405",
+    "load_ckpt_path":"/home/zhangzekai/nlpdl_hw4/outputs/scibert_acl_sup_237_adpt/checkpoint-540",
     "output_dir":"/home/zhangzekai/nlpdl_hw4/outputs",
     "save_strategy":"epoch",
     "save_total_limit":5,
     "num_train_epochs":15,
     "per_device_train_batch_size":64,
     "logging_steps":10,
-    "seed":237
+    "seed":237,
+    "use_adapter":1,
+    "adapter_size":768
 }

@@ -23,6 +23,8 @@ from transformers import (
     default_data_collator,
     set_seed,
 )
+from model.bert_adapter import BertForSequenceClassification
+from model.roberta_adapter import RobertaForSequenceClassification
 import wandb
 
 '''
@@ -43,14 +45,24 @@ class ModelArguments:
     load_ckpt_path: Optional[str] = field(
         default="", metadata={"help": "load your checkpoint"}
     )
+    use_adapter: Optional[int] = field(
+        default=0, metadata={"help": "whether to use adapter"}
+    )
+    adapter_size: Optional[int] = field(
+        default=-1, metadata={"help": "adapter size"}
+    )
 
 parser = HfArgumentParser((ModelArguments, DataTrainingArguments, TrainingArguments)) 
 if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
     model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
 else:
     model_args, data_args, training_args = parser.parse_args_into_dataclasses()
-training_args.output_dir+=f'/{model_args.model_name}_{data_args.dataset_name}_{training_args.seed}'
-training_args.run_name = f'{model_args.model_name}_{data_args.dataset_name}_{training_args.seed}'
+
+exp_name = f'{model_args.model_name}_{data_args.dataset_name}_{training_args.seed}'
+if model_args.use_adapter:
+    exp_name+='_adpt'
+training_args.output_dir+=f'/{exp_name}'
+training_args.run_name = f'{exp_name}'
 
 # report_to="wandb", [batch_size, epoch, lr, seed]
 
@@ -60,7 +72,7 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     datefmt="%m/%d/%Y %H:%M:%S",
     level=logging.INFO,
-    filename=f'/home/zhangzekai/nlpdl_hw4/logs/train_{model_args.model_name}_{data_args.dataset_name}_{training_args.seed}.log'
+    filename=f'/home/zhangzekai/nlpdl_hw4/logs/train_{exp_name}.log'
 )
 logger.info(f"Training/evaluation parameters {training_args}")
 
@@ -94,13 +106,54 @@ config = AutoConfig.from_pretrained(
     model_path,
     num_labels=num_labels,
 )
+config.use_adapter = model_args.use_adapter
+config.adapter_size = model_args.adapter_size
+if model_args.use_adapter:
+    assert (model_args.adapter_size > 0)
+
 tokenizer = AutoTokenizer.from_pretrained(
     model_path,
 )
-model = AutoModelForSequenceClassification.from_pretrained(
-    model_path,
-    config=config,
-)
+
+# model = AutoModelForSequenceClassification.from_pretrained(
+#     model_path,
+#     config=config,
+# )
+
+if model_args.model_name == 'roberta':
+    model = RobertaForSequenceClassification.from_pretrained(
+        model_path,
+        config=config,
+    )
+elif model_args.model_name in ['bert', 'scibert']:
+    model = BertForSequenceClassification.from_pretrained(
+        model_path,
+        config=config,
+    )
+
+if model_args.use_adapter:
+    if model_args.model_name == 'roberta':
+        adapter_params = \
+                        [model.roberta.encoder.layer[layer_id].attention.output.adapter for layer_id in range(config.num_hidden_layers)] + \
+                        [model.roberta.encoder.layer[layer_id].attention.output.LayerNorm for layer_id in range(config.num_hidden_layers)] + \
+                        [model.roberta.encoder.layer[layer_id].output.adapter for layer_id in range(config.num_hidden_layers)] + \
+                        [model.roberta.encoder.layer[layer_id].output.LayerNorm for layer_id in range(config.num_hidden_layers)] + \
+                        [model.classifier]
+
+    elif model_args.model_name in ['bert', 'scibert']:
+        adapter_params = \
+                        [model.bert.encoder.layer[layer_id].attention.output.adapter for layer_id in range(config.num_hidden_layers)] + \
+                        [model.bert.encoder.layer[layer_id].attention.output.LayerNorm for layer_id in range(config.num_hidden_layers)] + \
+                        [model.bert.encoder.layer[layer_id].output.adapter for layer_id in range(config.num_hidden_layers)] + \
+                        [model.bert.encoder.layer[layer_id].output.LayerNorm for layer_id in range(config.num_hidden_layers)] + \
+                        [model.bert.pooler] + [model.classifier]
+
+    for p in model.parameters():
+        p.requires_grad = False
+
+    for x in adapter_params:
+        for p in x.parameters():
+            p.requires_grad = True
 
 '''
 	process datasets and build up datacollator
