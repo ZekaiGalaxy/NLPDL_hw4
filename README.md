@@ -59,3 +59,13 @@ In this task, you have to write a `train.py` to train a transformer using the da
 Final report : [final report](https://github.com/violets-blue/NLPDL_hw4/blob/master/nlpdl_hw4_report.pdf)
 
 wandb results : [wandb results](https://wandb.ai/justinzzk/huggingface)
+
+To train and eval models on datasets, we can use
+
+    ```bash
+    # train
+    python train.py training_args/train_{modelname}_{datasetname}.json
+    
+    # eval
+    python train.py training_args/eval_{modelname}_{datasetname}.json
+    ```
