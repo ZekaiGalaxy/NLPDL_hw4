@@ -53,3 +53,9 @@ In this task, you have to write a `train.py` to train a transformer using the da
     3. To make the results reliable, you need to run the same experiments several times(~5 runs) and report the standard deviation.
     
     Adjust the batch size and epoch number to make your results converge stably. Write a small report to show the learning curves (metrics, loss during training, you can copy from `wandb`), results and configurations. Compare and analyze the results for different models and different datasets in your report.
+    
+## My Solution
+
+Final report : [final report](https://github.com/violets-blue/NLPDL_hw4/blob/master/nlpdl_hw4_report.pdf)
+
+wandb results : [wandb results](https://wandb.ai/justinzzk/huggingface)
